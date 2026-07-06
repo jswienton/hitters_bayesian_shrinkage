@@ -216,3 +216,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+mlb_batting_2021_2025.csv
+shrinkage_results.csv
