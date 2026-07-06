@@ -70,4 +70,39 @@ The improvement is largest exactly where sample sizes are smallest, and shrinks 
 — the pattern you'd expect from a correctly-calibrated shrinkage estimator, not an artifact
 of overfitting.
 
-## Repo structure
+## How to run
+
+```bash
+pip install -r requirements.txt
+jupyter notebook shrinkage_analysis.ipynb
+```
+
+Running the notebook top to bottom pulls fresh data via `pybaseball`, fits the model, and
+regenerates every result and plot above.
+
+## Applying the model to new players
+
+Once fit, scoring a new player doesn't require re-running MCMC — the shrinkage estimator has
+a closed-form solution given the fitted `mu_league`, `sigma_league`, and `obs_sd`:
+
+```python
+from shrinkage_model import shrink
+
+estimate, uncertainty = shrink(pa=15, woba=0.410)
+```
+
+This is used to score current-season, small-sample call-ups in near real time as the model's
+actual intended application — flagging which hot (or cold) small-sample starts are likely
+signal versus noise.
+
+## Next steps
+
+- **Hierarchical priors by player type** — pool call-ups toward a "prospect" sub-distribution
+  (informed by minor-league performance or prospect rankings) rather than the whole-league
+  mean, since a well-regarded prospect's true talent prior shouldn't be the league-average
+  hitter.
+- **Component-level shrinkage** — apply the same model to BB%, K%, and ISO separately, each
+  of which has a different signal-to-noise ratio and stabilizes at a different PA threshold,
+  then recompose into wOBA rather than shrinking the aggregate metric directly.
+- **Time-varying talent** — allow true talent to drift within a season via a random-walk or
+  age-curve prior, since a rookie can genuinely improve as he adjusts to MLB pitching.
